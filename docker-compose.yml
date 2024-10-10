@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  qrcode-generator:
+    build: .
+    ports:
+      - "${PORT}:3000"
+    environment:
+      NODE_ENV: production
+#    env_file:
+#      - .env
+    volumes:
+      - ./qrcodes:/app/qrcodes
