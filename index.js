@@ -17,10 +17,11 @@ app.post('/qr-code/generate', async (req, res) => {
     }
 
     try {
-        // Generate the QR code buffer
+        // Generate the QR code buffer with reduced margin (padding)
         const qrCodeData = await QRCode.toBuffer(text, {
             width: pixel,
             errorCorrectionLevel: 'H',  // High error correction level
+            margin: 1  // Reduce the white space (padding) around the QR code
         });
 
         // Load the QR code and logo
