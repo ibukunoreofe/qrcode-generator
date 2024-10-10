@@ -44,8 +44,10 @@ app.post('/qr-code/generate', async (req, res) => {
             fs.mkdirSync(path.join(__dirname, 'qrcodes'));
         }
 
-        // Save the image
-        await sharp(combinedImage).toFile(filepath);
+        // Save the image with compression
+        await sharp(combinedImage)
+            .png({ compressionLevel: 9, quality: 80 })  // Adjust compression settings
+            .toFile(filepath);
 
         console.log(`QR code with logo saved as ${filename}`);
 
