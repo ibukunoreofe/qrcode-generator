@@ -8,5 +8,8 @@ services:
       - "${PORT}:3000"  # Bind port on the host to port 3000 in the container
     environment:
       NODE_ENV: production
+      LOG_USERNAME: ${LOG_USERNAME}
+      LOG_PASSWORD: ${LOG_PASSWORD}
     volumes:
       - ./qrcodes:/app/qrcodes  # Persist QR code files in the 'qrcodes' directory on the host
+      - ./logs:/app/logs  # Persist logs
