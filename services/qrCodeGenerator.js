@@ -17,7 +17,7 @@ async function generateQRCodeWithLogo(text, format = 'png', pixel = 300, logoPat
         // Generate the QR code buffer with reduced margin
         const qrCodeData = await QRCode.toBuffer(text, {
             width: pixel,
-            errorCorrectionLevel: 'H',  // High error correction level for logo overlays
+            errorCorrectionLevel: 'H',
             margin: 1  // Reduce the white space (padding) around the QR code
         });
 
@@ -34,14 +34,14 @@ async function generateQRCodeWithLogo(text, format = 'png', pixel = 300, logoPat
         const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
         const uniqueId = uuidv4();
         const filename = `qrcode_${timestamp}_${uniqueId}.${format}`;
-        const filepath = path.join(__dirname, 'qrcodes', filename);
+        const filepath = path.join(__dirname, '../qrcodes', filename);
 
         // Ensure the 'qrcodes' directory exists
-        if (!fs.existsSync(path.join(__dirname, 'qrcodes'))) {
-            fs.mkdirSync(path.join(__dirname, 'qrcodes'));
+        if (!fs.existsSync(path.join(__dirname, '../qrcodes'))) {
+            fs.mkdirSync(path.join(__dirname, '../qrcodes'));
         }
 
-        // Save the final image with optional compression for PNG
+        // Save the final image with compression
         await sharp(combinedImage)
             .png({ compressionLevel: 9, quality: 80 })
             .toFile(filepath);
