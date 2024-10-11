@@ -3,12 +3,22 @@ const { generateQRCode } = require('./controllers/qrCodeController');  // QR cod
 const { viewLogs, viewLogFile } = require('./controllers/logController');  // Log controller
 const basicAuth = require('express-basic-auth');
 const authMiddleware = require('./middleware/authMiddleware');  // Bearer Token Middleware
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(express.json());
 
-// QR Code generation route with Bearer Token authentication
-app.post('/qr-code/generate', authMiddleware, generateQRCode);
+// Rate limiter middleware - 50 requests per second (1000ms) per IP
+const qrCodeRateLimiter = rateLimit({
+    windowMs: 1000, // 1 second window
+    max: 50, // Limit each IP to 50 requests per windowMs
+    message: 'Too many requests from this IP, please try again after a second.',
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// QR Code generation route with Bearer Token authentication and rate limiter
+app.post('/qr-code/generate', authMiddleware, qrCodeRateLimiter, generateQRCode);
 
 // Protect the logs endpoint with basic authentication
 app.use('/logs', basicAuth({
