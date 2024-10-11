@@ -25,6 +25,16 @@ exports.viewLogFile = (req, res) => {
 };
 
 /**
+ * Helper function to convert bytes to human-readable format (KB, MB, etc.)
+ */
+function formatFileSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Byte';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
+/**
  * Controller to handle viewing the list of log files
  */
 exports.viewLogs = (req, res) => {
@@ -36,14 +46,17 @@ exports.viewLogs = (req, res) => {
             return res.status(500).send('Could not load logs');
         }
 
-        // Filter only .log files and get stats (like creation time)
+        // Filter only .log files and get stats (like creation time and file size)
         const logFiles = files
             .filter(file => file.endsWith('.log')) // Filter for .log files
-            .map(file => ({
-                file,
-                // Get file creation time for sorting
-                ctime: fs.statSync(path.join(logPath, file)).ctime
-            }))
+            .map(file => {
+                const stats = fs.statSync(path.join(logPath, file));
+                return {
+                    file,
+                    ctime: stats.ctime,  // Creation time
+                    size: stats.size     // File size in bytes
+                };
+            })
             // Sort by creation time (newest first)
             .sort((a, b) => b.ctime - a.ctime);
 
@@ -81,6 +94,7 @@ exports.viewLogs = (req, res) => {
                     <tr>
                         <th>File Name</th>
                         <th>Created At</th>
+                        <th>File Size</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -90,6 +104,7 @@ exports.viewLogs = (req, res) => {
                 <tr>
                     <td><a href="/logs/${log.file}">${log.file}</a></td>
                     <td>${log.ctime.toLocaleString()}</td>
+                    <td>${formatFileSize(log.size)}</td>
                 </tr>`;
         });
 
