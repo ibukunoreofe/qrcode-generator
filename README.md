@@ -1,5 +1,3 @@
-QR Code Generator App - README body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4; } h1 { color: #333; } h2 { color: #555; } pre { background-color: #eee; padding: 10px; border-left: 5px solid #ccc; overflow-x: auto; } code { background-color: #f9f9f9; padding: 2px 4px; font-size: 90%; color: #c7254e; border-radius: 4px; } ul, ol { margin: 10px 0; padding-left: 20px; } .code-block { background-color: #f1f1f1; border: 1px solid #ddd; padding: 10px; border-radius: 4px; white-space: pre; }
-
 # QR Code Generator App - README
 
 This is a scalable QR Code Generator API that allows users to generate QR codes, store them in a specified MinIO bucket, and view logs related to the QR code generation process.
@@ -50,11 +48,14 @@ Endpoint: `/qr-code/generate`
 **Description:** Generates a QR code and stores it in the MinIO bucket. The content, format, and size of the QR code are configurable via the request body.
 
 Request Body Example:
+```json
 {
 "text": "https://example.com",
 "format": "png",
 "pixel": 300
 }
+```
+
 
 ### 2\. View Logs
 
