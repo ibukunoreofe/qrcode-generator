@@ -2,12 +2,13 @@ const express = require('express');
 const { generateQRCode } = require('./controllers/qrCodeController');  // QR code controller
 const { viewLogs, viewLogFile } = require('./controllers/logController');  // Log controller
 const basicAuth = require('express-basic-auth');
+const authMiddleware = require('./middleware/authMiddleware');  // Bearer Token Middleware
 
 const app = express();
 app.use(express.json());
 
-// QR Code generation route
-app.post('/qr-code/generate', generateQRCode);
+// QR Code generation route with Bearer Token authentication
+app.post('/qr-code/generate', authMiddleware, generateQRCode);
 
 // Protect the logs endpoint with basic authentication
 app.use('/logs', basicAuth({
