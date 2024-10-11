@@ -36,12 +36,70 @@ exports.viewLogs = (req, res) => {
             return res.status(500).send('Could not load logs');
         }
 
-        let logList = '<h1>Log Files</h1><ul>';
-        files.forEach(file => {
-            logList += `<li><a href="/logs/${file}">${file}</a></li>`;
-        });
-        logList += '</ul>';
+        // Filter only .log files and get stats (like creation time)
+        const logFiles = files
+            .filter(file => file.endsWith('.log')) // Filter for .log files
+            .map(file => ({
+                file,
+                // Get file creation time for sorting
+                ctime: fs.statSync(path.join(logPath, file)).ctime
+            }))
+            // Sort by creation time (newest first)
+            .sort((a, b) => b.ctime - a.ctime);
 
+        // Build the HTML table for logs
+        let logList = `
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 20px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                th, td {
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                }
+                th {
+                    background-color: #f2f2f2;
+                }
+                tr:hover {background-color: #f5f5f5;}
+                h1 {
+                    color: #333;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Log Files</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+        logFiles.forEach(log => {
+            logList += `
+                <tr>
+                    <td><a href="/logs/${log.file}">${log.file}</a></td>
+                    <td>${log.ctime.toLocaleString()}</td>
+                </tr>`;
+        });
+
+        logList += `
+                </tbody>
+            </table>
+        </body>
+        </html>`;
+
+        // Send the formatted log list as the response
         res.send(logList);
     });
 };
