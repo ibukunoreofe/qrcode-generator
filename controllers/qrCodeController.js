@@ -1,12 +1,13 @@
 const { generateQRCodeWithLogo } = require('../services/qrCodeGeneratorService');
 const logger = require('../services/loggingService');  // Import the logger
 const path = require('path');
+const OUTPUT_TYPES = require('../constants/outputTypes');  // Import the output types
 
 /**
  * Controller to handle QR code generation
  */
 exports.generateQRCode = async (req, res) => {
-    const { text, format = 'png', pixel = 300, outputType = 'base64' } = req.body;  // Accept outputType in the request body
+    const { text, format = 'png', pixel = 300, outputType = OUTPUT_TYPES.BASE64 } = req.body;  // Default to base64 output
 
     if (!text) {
         logger.error({
@@ -38,14 +39,14 @@ exports.generateQRCode = async (req, res) => {
             timestamp: new Date().toISOString(),
         });
 
-        if (outputType === 'base64') {
+        if (outputType === OUTPUT_TYPES.BASE64) {
             // Return base64 image in the response body
             return res.status(200).json({ image: result });
-        } else if (outputType === 'file') {
+        } else if (outputType === OUTPUT_TYPES.FILE) {
             // Return file path in the response
             return res.status(200).json({ message: 'QR code generated and saved', filepath: result });
         } else {
-            return res.status(400).json({ error: 'Invalid output type. Supported types: base64, file' });
+            return res.status(400).json({ error: `Invalid output type. Supported types: ${Object.values(OUTPUT_TYPES).join(', ')}` });
         }
     } catch (error) {
         // Log the error details along with request information for troubleshooting

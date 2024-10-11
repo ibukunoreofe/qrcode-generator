@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
+const OUTPUT_TYPES = require('../constants/outputTypes');  // Import the output types
 
 /**
  * Generates a QR code with a logo in the center and outputs it as base64 or saves it to the file system.
@@ -13,7 +14,7 @@ const { v4: uuidv4 } = require('uuid');
  * @param {string} outputType - The output type: 'base64' or 'file' (default is 'base64').
  * @returns {Promise<string>} - The base64 string or file path of the saved QR code.
  */
-async function generateQRCodeWithLogo(text, format = 'png', pixel = 300, logoPath, outputType = 'base64') {
+async function generateQRCodeWithLogo(text, format = 'png', pixel = 300, logoPath, outputType = OUTPUT_TYPES.BASE64) {
     try {
         // Generate the QR code buffer with reduced margin
         const qrCodeData = await QRCode.toBuffer(text, {
@@ -32,11 +33,11 @@ async function generateQRCodeWithLogo(text, format = 'png', pixel = 300, logoPat
             .toBuffer();
 
         // Handle output based on the output type
-        if (outputType === 'base64') {
+        if (outputType === OUTPUT_TYPES.BASE64) {
             // Convert the image buffer to base64 and return it
             const base64Image = combinedImage.toString('base64');
             return `data:image/${format};base64,${base64Image}`;
-        } else if (outputType === 'file') {
+        } else if (outputType === OUTPUT_TYPES.FILE) {
             // Create a unique filename with a timestamp and UUID
             const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
             const uniqueId = uuidv4();
@@ -53,10 +54,9 @@ async function generateQRCodeWithLogo(text, format = 'png', pixel = 300, logoPat
                 .png({ compressionLevel: 9, quality: 80 })
                 .toFile(filepath);
 
-            console.log(`QR code with logo saved as ${filename}`);
             return filepath;
         } else {
-            throw new Error('Invalid output type. Supported types: base64, file');
+            throw new Error(`Invalid output type. Supported types: ${Object.values(OUTPUT_TYPES).join(', ')}`);
         }
     } catch (error) {
         console.error('Error generating QR code:', error);
