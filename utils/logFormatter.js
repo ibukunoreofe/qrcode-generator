@@ -10,7 +10,7 @@
 exports.formatLogEntries = (logData, filename) => {
     const logLines = logData.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
 
-    // Count log levels
+    // Initialize log counts
     const logCounts = {
         error: 0,
         info: 0,
@@ -23,15 +23,17 @@ exports.formatLogEntries = (logData, filename) => {
         <h1>Log File: ${filename}</h1>
         <div style="font-family: monospace;">
         <div id="log-controls">
-            <button onclick="filterLogs('error')">ERROR (${logCounts.error})</button>
-            <button onclick="filterLogs('info')">INFO (${logCounts.info})</button>
-            <button onclick="filterLogs('warn')">WARN (${logCounts.warn})</button>
-            <button onclick="filterLogs('debug')">DEBUG (${logCounts.debug})</button>
+            <!-- Placeholder for buttons, we'll update counts after the loop -->
+            <button id="btn-error" onclick="filterLogs('error')">ERROR (0)</button>
+            <button id="btn-info" onclick="filterLogs('info')">INFO (0)</button>
+            <button id="btn-warn" onclick="filterLogs('warn')">WARN (0)</button>
+            <button id="btn-debug" onclick="filterLogs('debug')">DEBUG (0)</button>
             <button onclick="filterLogs('all')">ALL (${logCounts.total})</button>
         </div>
         <div id="log-entries">
     `;
 
+    // Loop through log entries and count each log level
     logLines.forEach((line, index) => {
         try {
             const logEntry = JSON.parse(line); // Parse the line as JSON
@@ -80,11 +82,18 @@ exports.formatLogEntries = (logData, filename) => {
         }
     });
 
+    // Close log-entries div and add JavaScript logic
     formattedLog += `
         </div>
         <a href="/logs">Back to Log List</a>
         </div>
         <script>
+            // Update button counts after logs are processed
+            document.getElementById('btn-error').innerHTML = 'ERROR (' + ${logCounts.error} + ')';
+            document.getElementById('btn-info').innerHTML = 'INFO (' + ${logCounts.info} + ')';
+            document.getElementById('btn-warn').innerHTML = 'WARN (' + ${logCounts.warn} + ')';
+            document.getElementById('btn-debug').innerHTML = 'DEBUG (' + ${logCounts.debug} + ')';
+
             function filterLogs(level) {
                 const logEntries = document.querySelectorAll('#log-entries > div');
                 logEntries.forEach(entry => {
@@ -102,6 +111,7 @@ exports.formatLogEntries = (logData, filename) => {
                     });
                 }
             }
+
             // Set default view to ERROR logs only
             filterLogs('error');
         </script>
