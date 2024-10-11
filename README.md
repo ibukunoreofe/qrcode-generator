@@ -91,6 +91,9 @@ The application is designed to run in a multi-container environment. Each contai
 ## Running on Docker
 
 ```shell
+
+docker-compose build
+
 docker-compose up -d
 
 docker-compose ps -q | grep . && docker-compose down && docker-compose up --build
