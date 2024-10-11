@@ -17,6 +17,11 @@ const qrCodeRateLimiter = rateLimit({
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
+// Root route - Landing page
+app.get('/', (req, res) => {
+    res.status(200).send('Welcome to QR Code Generator!');
+});
+
 // QR Code generation route with Bearer Token authentication and rate limiter
 app.post('/qr-code/generate', authMiddleware, qrCodeRateLimiter, generateQRCode);
 
